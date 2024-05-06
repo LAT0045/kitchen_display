@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
+import 'package:kitchen_display/cards/mini_card.dart';
 import 'package:kitchen_display/cards/order_card.dart';
 import 'package:kitchen_display/mobx/time.dart';
 import 'package:kitchen_display/screen_type/screen_type.dart';
@@ -92,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     const Text(
                                       ':',
                                       style: TextStyle(
-                                          fontSize: 10.0,
+                                          fontSize: 20.0,
                                           fontFamily: "Comfortaa",
                                           color: AppColors.mediumOrangeColor,
                                           fontWeight: FontWeight.bold),
@@ -108,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       child: Text(
                                         date,
                                         style: const TextStyle(
-                                            fontSize: 20.0,
+                                            fontSize: 17.0,
                                             fontFamily: "Comfortaa",
                                             color: AppColors.mediumOrangeColor,
                                             fontWeight: FontWeight.bold),
@@ -156,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             child: Text(
                                               "Elapsed time > 60 min",
                                               style: TextStyle(
-                                                fontSize: 14.0,
+                                                fontSize: 12.0,
                                                 fontFamily: "Comfortaa",
                                               ),
                                             ),
@@ -182,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             child: Text(
                                               "60 min <= Elapsed time >= 30 min",
                                               style: TextStyle(
-                                                fontSize: 14.0,
+                                                fontSize: 12.0,
                                                 fontFamily: "Comfortaa",
                                               ),
                                             ),
@@ -208,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             child: Text(
                                               "Elapsed time < 30 min",
                                               style: TextStyle(
-                                                fontSize: 14.0,
+                                                fontSize: 12.0,
                                                 fontFamily: "Comfortaa",
                                               ),
                                             ),
@@ -235,6 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             )
                           ]),
                         ),
+                        MiniCard(screenType: screenType)
                       ],
                     ),
                   ),
@@ -451,7 +453,7 @@ class TimeContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 35,
-      height: 40,
+      height: 35,
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
         color: AppColors.mediumOrangeColor,
@@ -461,7 +463,7 @@ class TimeContainer extends StatelessWidget {
         child: Text(
           '$value',
           style: const TextStyle(
-              fontSize: 22.0,
+              fontSize: 18.0,
               fontFamily: "Comfortaa",
               color: Colors.white,
               fontWeight: FontWeight.bold),
