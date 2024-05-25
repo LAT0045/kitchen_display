@@ -1,4 +1,8 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
 import 'package:kitchen_display/cards/mini_card.dart';
@@ -16,7 +20,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      scrollBehavior: MyCustomScrollBehavior(),
       home: MyHomePage(),
     );
   }
@@ -33,16 +38,87 @@ class _MyHomePageState extends State<MyHomePage> {
   final TimeStore timeStore = TimeStore();
   late String date;
 
+  ScrollController _fullScrollController = ScrollController();
+  ScrollController _shortScrollController = ScrollController();
+
+  List<int> _items = List.generate(10, (index) => index);
+
   @override
   void initState() {
     super.initState();
     timeStore.startRealTimeUpdates();
     date = DateFormat('EEEE, dd/MM/yyyy').format(timeStore.currentTime);
+
+    _fullScrollController = ScrollController();
+    _shortScrollController = ScrollController();
+
+    _fullScrollController.addListener(_scrollListener);
+    _shortScrollController.addListener(_scrollListener2);
+  }
+
+  void _scrollListener() {
+    final int padding = 10;
+    final int fullCardWidth = 230 + padding;
+    final int miniCardWidth = 150 + padding;
+
+    // Repeat scrolling
+    if (_fullScrollController.position.atEdge) {
+      if (_fullScrollController.position.pixels ==
+          _fullScrollController.position.maxScrollExtent) {
+        double offset =
+            _fullScrollController.position.maxScrollExtent / _items.length;
+        _fullScrollController
+            .jumpTo(_fullScrollController.position.minScrollExtent + offset);
+      }
+    }
+
+    // Scroll short scroller
+    if (_fullScrollController.position.userScrollDirection !=
+        ScrollDirection.idle) {
+      double scrollOffset = _fullScrollController.offset;
+      double jumpPos =
+          ((scrollOffset / fullCardWidth) * miniCardWidth).toDouble();
+      _shortScrollController.jumpTo(jumpPos);
+    }
+  }
+
+  void _scrollListener2() {
+    final int padding = 10;
+    final int fullCardWidth = 230 + padding;
+    final int miniCardWidth = 150 + padding;
+
+    // Repeat scrolling
+    if (_shortScrollController.position.atEdge) {
+      if (_shortScrollController.position.pixels ==
+          _shortScrollController.position.maxScrollExtent) {
+        double offset =
+            _shortScrollController.position.maxScrollExtent / _items.length;
+        _shortScrollController
+            .jumpTo(_shortScrollController.position.minScrollExtent + offset);
+      }
+    }
+
+    // Scroll full scroller
+    if (_shortScrollController.position.userScrollDirection !=
+        ScrollDirection.idle) {
+      double scrollOffset = _shortScrollController.offset;
+      double jumpPos =
+          ((scrollOffset / miniCardWidth) * fullCardWidth).toDouble();
+      _fullScrollController.jumpTo(jumpPos);
+    }
+  }
+
+  @override
+  void dispose() {
+    _fullScrollController.dispose();
+    _shortScrollController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final screenType = getFormFactor(context);
+
     return Scaffold(
       body: screenType == ScreenType.tablet
           ? Container(
@@ -225,18 +301,45 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-                          child: Column(children: [
-                            Row(
-                              children: [
-                                for (int i = 0; i < 10; i++)
-                                  OrderCard(
-                                    screenType: screenType,
-                                  ),
-                              ],
-                            )
-                          ]),
+                          controller: _fullScrollController,
+                          child: Row(
+                            children: [
+                              ..._items
+                                  .map((item) => OrderCard(orderNumber: item))
+                                  .toList(),
+                              ..._items
+                                  .map((item) => OrderCard(orderNumber: item))
+                                  .toList(),
+                            ],
+                          ),
                         ),
-                        MiniCard(screenType: screenType)
+                        Container(
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 850,
+                                height: 130,
+                                color: AppColors.blue,
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _shortScrollController,
+                                child: Row(
+                                  children: [
+                                    ..._items
+                                        .map((item) =>
+                                            MiniCard(orderNumber: item))
+                                        .toList(),
+                                    ..._items
+                                        .map((item) =>
+                                            MiniCard(orderNumber: item))
+                                        .toList(),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -428,7 +531,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               children: [
                                 for (int i = 0; i < 10; i++)
                                   OrderCard(
-                                    screenType: screenType,
+                                    orderNumber: i,
                                   ),
                               ],
                             )
@@ -471,4 +574,14 @@ class TimeContainer extends StatelessWidget {
       ),
     );
   }
+}
+
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.stylus,
+        PointerDeviceKind.unknown,
+      };
 }

@@ -4,8 +4,8 @@ import 'package:kitchen_display/screen_type/screen_type.dart';
 import 'package:kitchen_display/utils/colors.dart';
 
 class OrderCard extends StatefulWidget {
-  const OrderCard({super.key, required this.screenType});
-  final ScreenType screenType;
+  const OrderCard({super.key, required this.orderNumber});
+  final int orderNumber;
 
   @override
   State<OrderCard> createState() => _OrderCardtState();
@@ -14,9 +14,10 @@ class OrderCard extends StatefulWidget {
 class _OrderCardtState extends State<OrderCard> {
   @override
   Widget build(BuildContext context) {
-    return widget.screenType == ScreenType.tablet
+    final screenType = getFormFactor(context);
+    return screenType == ScreenType.tablet
         ? Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Material(
               elevation: 4,
               borderRadius: BorderRadius.circular(40),
@@ -57,14 +58,14 @@ class _OrderCardtState extends State<OrderCard> {
                             ),
                           ),
                         ),
-                        const Expanded(
+                        Expanded(
                           child: Padding(
                             padding: EdgeInsets.only(right: 20, top: 5),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  "#0001",
+                                  widget.orderNumber.toString(),
                                   style: TextStyle(
                                       fontFamily: "Comfortaa",
                                       fontSize: 13,
@@ -158,7 +159,7 @@ class _OrderCardtState extends State<OrderCard> {
                                 children: [
                                   for (int i = 0; i < 6; i++)
                                     OrderItem(
-                                      screenType: widget.screenType,
+                                      screenType: screenType,
                                     )
                                 ],
                               ),
@@ -370,7 +371,7 @@ class _OrderCardtState extends State<OrderCard> {
                                 children: [
                                   for (int i = 0; i < 6; i++)
                                     OrderItem(
-                                      screenType: widget.screenType,
+                                      screenType: screenType,
                                     )
                                 ],
                               ),

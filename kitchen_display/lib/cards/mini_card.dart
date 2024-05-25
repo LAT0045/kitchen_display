@@ -4,8 +4,8 @@ import 'package:kitchen_display/screen_type/screen_type.dart';
 import 'package:kitchen_display/utils/colors.dart';
 
 class MiniCard extends StatefulWidget {
-  const MiniCard({super.key, required this.screenType});
-  final ScreenType screenType;
+  const MiniCard({super.key, required this.orderNumber});
+  final int orderNumber;
 
   @override
   State<StatefulWidget> createState() => _MiniCardState();
@@ -14,7 +14,8 @@ class MiniCard extends StatefulWidget {
 class _MiniCardState extends State<MiniCard> {
   @override
   Widget build(BuildContext context) {
-    return widget.screenType == ScreenType.tablet
+    final screenType = getFormFactor(context);
+    return screenType == ScreenType.tablet
         ? Padding(
             padding: const EdgeInsets.all(10.0),
             child: Material(
@@ -58,10 +59,10 @@ class _MiniCardState extends State<MiniCard> {
                             ),
                           ),
                         ),
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.only(right: 20, top: 5),
                           child: Text(
-                            "#0001",
+                            widget.orderNumber.toString(),
                             style: TextStyle(
                                 fontFamily: "Comfortaa",
                                 fontSize: 12,
